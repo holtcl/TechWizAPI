@@ -176,9 +176,23 @@ namespace TechWizWebAPI
 
                 cmd = new MySqlCommand(sqlString, conn);
 
-                cmd.ExecuteNonQuery();
-                return true;
+                cmd.Prepare();
 
+                cmd.Parameters.AddWithValue("@UserName", userToSave.UserName);
+                cmd.Parameters.AddWithValue("@FirstName", userToSave.FirstName);
+                cmd.Parameters.AddWithValue("@LastName", userToSave.LastName);
+                cmd.Parameters.AddWithValue("@Address", userToSave.Address);
+                cmd.Parameters.AddWithValue("@City", userToSave.City);
+                cmd.Parameters.AddWithValue("@State", userToSave.State);
+                cmd.Parameters.AddWithValue("@Zip", userToSave.Zip);
+                cmd.Parameters.AddWithValue("@Phone", userToSave.Phone);
+                cmd.Parameters.AddWithValue("@Email", userToSave.Email);
+                cmd.Parameters.AddWithValue("@Password", userToSave.Password);
+                cmd.Parameters.AddWithValue("@Zip", ID);
+
+                cmd.ExecuteNonQuery();
+                
+                return true;
             }
             else
             {
