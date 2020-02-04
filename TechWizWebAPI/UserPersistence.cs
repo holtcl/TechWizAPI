@@ -64,8 +64,11 @@ namespace TechWizWebAPI
             User u = new User();
             MySql.Data.MySqlClient.MySqlDataReader mySQLReader = null;
 
-            String sqlString = "SELECT * FROM user WHERE UserID = " + ID.ToString();
+            String sqlString = "SELECT * FROM user WHERE UserID = @ID;";
+
             MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
+            cmd.Parameters.Add("@ID", MySql.Data.MySqlClient.MySqlDbType.Int32);
+            cmd.Parameters["@ID"].Value = ID;
 
             mySQLReader = cmd.ExecuteReader();
             if (mySQLReader.Read())
