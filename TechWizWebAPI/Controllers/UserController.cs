@@ -32,14 +32,17 @@ namespace TechWizWebAPI.Controllers
         // POST: api/User
         public HttpResponseMessage Post([FromBody]User user)
         {
+            /*if(user == null ||  String.IsNullOrEmpty(user.UserName) || String.IsNullOrEmpty(user.FirstName) || String.IsNullOrEmpty(user.LastName) || String.IsNullOrEmpty(user.Email) || String.IsNullOrEmpty(user.Password))
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+                */
             //check that no values are null or empty
             if (user.GetType().GetProperties()
                 .Where(pi => pi.PropertyType == typeof(string))
                 .Select(pi => (string)pi.GetValue(user))
                 .Any(value => string.IsNullOrEmpty(value)))
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
-
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "All fields are required.");
             
+
             UserPersistence up = new UserPersistence();
             long id;
             id =up.saveUser(user);
