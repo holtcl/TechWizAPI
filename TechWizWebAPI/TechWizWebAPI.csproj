@@ -534,6 +534,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -547,6 +548,11 @@
     </Compile>
     <Compile Include="Provider\OAuthAppProvider.cs" />
     <Compile Include="Startup.cs" />
+
+    <Compile Include="Controllers\RequestController.cs" />
+    <Compile Include="Models\Request.cs" />
+    <Compile Include="RequestPersistence.cs" />
+
     <Compile Include="UserPersistence.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\UserController.cs" />
