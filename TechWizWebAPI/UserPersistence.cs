@@ -50,6 +50,7 @@ namespace TechWizWebAPI
                 u.Phone = mySQLReader.GetString(8);
                 u.Email = mySQLReader.GetString(9);
                 u.Password = mySQLReader.GetString(10);
+                u.isWizard = mySQLReader.GetInt32(11);
                 userArray.Add(u);
             }
 
@@ -83,6 +84,7 @@ namespace TechWizWebAPI
                 u.Phone = mySQLReader.GetString(8);
                 u.Email = mySQLReader.GetString(9);
                 u.Password = mySQLReader.GetString(10);
+                u.isWizard = mySQLReader.GetInt32(11);
                 return u;
             }
             else
@@ -177,6 +179,7 @@ namespace TechWizWebAPI
                 cmd = new MySqlCommand(sqlString, conn);
 
                 cmd.Prepare();
+
 
                 cmd.Parameters.AddWithValue("@UserName", userToSave.UserName);
                 cmd.Parameters.AddWithValue("@FirstName", userToSave.FirstName);
