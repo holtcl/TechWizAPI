@@ -6,6 +6,7 @@ using TechWizWebAPI.Models;
 using System.Collections;
 using System.Web.Http;
 using System.Net.Http;
+using System.Security.Claims;
 
 namespace TechWizWebAPI.Controllers
 {
@@ -13,10 +14,18 @@ namespace TechWizWebAPI.Controllers
     {
         [Authorize]
         // GET: api/User
-        public ArrayList Get()
+        public User Get()
         {
-            UserPersistence up = new UserPersistence();
-            return up.getUsers();
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null)
+            {
+                return null;
+            }
+            else
+            {
+                UserPersistence up = new UserPersistence();
+                return up.getUser((long)Int64.Parse(identity.FindFirst("UserID").Value));
+            }
         }
 
         [Authorize]
