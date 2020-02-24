@@ -53,6 +53,7 @@ namespace TechWizWebAPI
                 u.Phone = mySQLReader.GetString(8);
                 u.Email = mySQLReader.GetString(9);
                 u.Password = mySQLReader.GetString(10);
+                u.isWizard = mySQLReader.GetInt32(11);
                 userArray.Add(u);
             }
 
@@ -81,6 +82,7 @@ namespace TechWizWebAPI
                 u.Phone = mySQLReader.GetString(8);
                 u.Email = mySQLReader.GetString(9);
                 u.Password = mySQLReader.GetString(10);
+                u.isWizard = mySQLReader.GetInt32(11);
                 return u;
             }
             else
@@ -133,7 +135,7 @@ namespace TechWizWebAPI
             {
                 mySQLReader.Close();
 
-                sqlString = "UPDATE user SET UserName= '" + userToSave.UserName + "', FirstName= '" + userToSave.FirstName + "', LastName='" + userToSave.LastName + "', Address='" + userToSave.Address + "', City='" + userToSave.City + "', State='" + userToSave.State + "', Zip=" + userToSave.Zip + ", Phone='" + userToSave.Phone + "', Email='" + userToSave.Email + "', Password='" + userToSave.Password + "' WHERE UserID = " + ID.ToString();
+                sqlString = "UPDATE user SET UserName= '" + userToSave.UserName + "', FirstName= '" + userToSave.FirstName + "', LastName='" + userToSave.LastName + "', Address='" + userToSave.Address + "', City='" + userToSave.City + "', State='" + userToSave.State + "', Zip=" + userToSave.Zip + ", Phone='" + userToSave.Phone + "', Email='" + userToSave.Email + "', Password='" + userToSave.Password + "', isWizard=" + userToSave.isWizard + " WHERE UserID = " + ID.ToString();
 
                 cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
 
@@ -151,7 +153,7 @@ namespace TechWizWebAPI
 
             public long saveUser(User userToSave)
         {
-            String sqlString = "INSERT INTO user (UserName, FirstName, LastName, Address, City, State, Zip, Phone, Email, Password) VALUES ('" + userToSave.UserName + "','" + userToSave.FirstName + "','" + userToSave.LastName + "','" + userToSave.Address + "','" + userToSave.City + "','" + userToSave.State + "'," + userToSave.Zip + ",'" + userToSave.Phone + "','" + userToSave.Email + "','" + userToSave.Password + "')";
+            String sqlString = "INSERT INTO user (UserName, FirstName, LastName, Address, City, State, Zip, Phone, Email, Password, isWizard) VALUES ('" + userToSave.UserName + "','" + userToSave.FirstName + "','" + userToSave.LastName + "','" + userToSave.Address + "','" + userToSave.City + "','" + userToSave.State + "'," + userToSave.Zip + ",'" + userToSave.Phone + "','" + userToSave.Email + "','" + userToSave.Password + "', " + userToSave.isWizard + ")";
             MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
             cmd.ExecuteNonQuery();
             long id = cmd.LastInsertedId;

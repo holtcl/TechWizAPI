@@ -18,5 +18,9 @@ namespace TechWizWebAPI.Models
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public int isWizard { get; set; } 
+        //public ??? pic {get; set;}
+
+
     }
 }
