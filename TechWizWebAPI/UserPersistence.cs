@@ -1,29 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using TechWizWebAPI.Models;
-using MySql.Data;
 using System.Collections;
+using MySql.Data.MySqlClient;
 
 
 namespace TechWizWebAPI
 {
     public class UserPersistence
     {
-        private MySql.Data.MySqlClient.MySqlConnection conn;
+        private MySqlConnection conn;
 
         public UserPersistence()
         {
             string myConnectionString;
-            myConnectionString = "server=127.0.0.1;uid=root;pwd=techwizard;database=techwizard";
+            myConnectionString = "server=127.0.0.1;uid=root;pwd=password;database=techwizard";
             try
             {
                 conn = new MySql.Data.MySqlClient.MySqlConnection();
                 conn.ConnectionString = myConnectionString;
                 conn.Open();
             }
-            catch (MySql.Data.MySqlClient.MySqlException ex)
+            catch (MySqlException ex)
             {
 
             }
@@ -33,10 +30,10 @@ namespace TechWizWebAPI
         {
             ArrayList userArray = new ArrayList();
 
-            MySql.Data.MySqlClient.MySqlDataReader mySQLReader = null;
+            MySqlDataReader mySQLReader = null;
 
             String sqlString = "SELECT * FROM user";
-            MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
+            MySqlCommand cmd = new MySqlCommand(sqlString, conn);
 
             mySQLReader = cmd.ExecuteReader();
             while (mySQLReader.Read())
@@ -63,10 +60,15 @@ namespace TechWizWebAPI
         public User getUser(long ID)
         {
             User u = new User();
-            MySql.Data.MySqlClient.MySqlDataReader mySQLReader = null;
+            MySqlDataReader mySQLReader = null;
 
-            String sqlString = "SELECT * FROM user WHERE UserID = " + ID.ToString();
-            MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
+            String sqlString = "SELECT * FROM user WHERE UserID = @ID;";
+
+            MySqlCommand cmd = new MySqlCommand(sqlString, conn);
+
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@ID", ID);
 
             mySQLReader = cmd.ExecuteReader();
             if (mySQLReader.Read())
@@ -91,57 +93,109 @@ namespace TechWizWebAPI
             }
 
 
-            }
+        }
 
-        public bool deleteUser(long ID)
+        public User GetUserByCredentials(String username, String password)
         {
             User u = new User();
-            MySql.Data.MySqlClient.MySqlDataReader mySQLReader = null;
+            MySqlDataReader mySQLReader = null;
 
-            String sqlString = "SELECT * FROM user WHERE UserID = " + ID.ToString();
-            MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
+            String sqlString = "SELECT * FROM user WHERE UserName = @UserName AND Password = @Password;";
+
+            MySqlCommand cmd = new MySqlCommand(sqlString, conn);
+
+            cmd.Prepare(); 
+
+            cmd.Parameters.AddWithValue("@UserName", username);
+            cmd.Parameters.AddWithValue("@Password", password);
 
             mySQLReader = cmd.ExecuteReader();
             if (mySQLReader.Read())
             {
-                mySQLReader.Close();
+                u.ID = mySQLReader.GetInt32(0);
+                u.UserName = mySQLReader.GetString(1);
+                u.FirstName = mySQLReader.GetString(2);
+                u.LastName = mySQLReader.GetString(3);
+                u.Address = mySQLReader.GetString(4);
+                u.City = mySQLReader.GetString(5);
+                u.State = mySQLReader.GetString(6);
+                u.Zip = mySQLReader.GetInt32(7);
+                u.Phone = mySQLReader.GetString(8);
+                u.Email = mySQLReader.GetString(9);
+                u.Password = mySQLReader.GetString(10);
+                return u;
+            }
+            else
+            {
+                return null;
+            }
 
-                sqlString = "DELETE FROM user WHERE UserID = " + ID.ToString();
-                
-                cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
 
-                cmd.ExecuteNonQuery();
-                return true;
+        }
 
+        public bool deleteUser(long ID)
+        {
+            //return true if the user existed, false if it did not
+
+            String sqlString = "DELETE FROM user WHERE UserID = @ID";
+
+            MySqlCommand cmd = new MySqlCommand(sqlString, conn);
+
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue ("@ID", ID);
+
+            int rowsDeleted = cmd.ExecuteNonQuery();
+
+            if (rowsDeleted > 0) 
+            {
+                return true; 
             }
             else
             {
                 return false;
             }
-
-
         }
 
         public bool updateUser(long ID, User userToSave)
         {
 
-            MySql.Data.MySqlClient.MySqlDataReader mySQLReader = null;
+            MySqlDataReader mySQLReader = null;
 
-            String sqlString = "SELECT * FROM user WHERE UserID = " + ID.ToString();
-            MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
+            String sqlString = "SELECT * FROM user WHERE UserID = @ID";
+            MySqlCommand cmd = new MySqlCommand(sqlString, conn);
+
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@ID", ID);
 
             mySQLReader = cmd.ExecuteReader();
             if (mySQLReader.Read())
             {
                 mySQLReader.Close();
 
-                sqlString = "UPDATE user SET UserName= '" + userToSave.UserName + "', FirstName= '" + userToSave.FirstName + "', LastName='" + userToSave.LastName + "', Address='" + userToSave.Address + "', City='" + userToSave.City + "', State='" + userToSave.State + "', Zip=" + userToSave.Zip + ", Phone='" + userToSave.Phone + "', Email='" + userToSave.Email + "', Password='" + userToSave.Password + "', isWizard=" + userToSave.isWizard + " WHERE UserID = " + ID.ToString();
+                sqlString = "UPDATE user SET UserName=@UserName, FirstName=@FirstName, LastName=@LastName, Address=@Address, City=@City, State=@State, Zip=@Zip, Phone=@Phone, Email=@Email, Password=@Password WHERE UserID = @ID";
 
-                cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
+                cmd = new MySqlCommand(sqlString, conn);
+
+                cmd.Prepare();
+
+
+                cmd.Parameters.AddWithValue("@UserName", userToSave.UserName);
+                cmd.Parameters.AddWithValue("@FirstName", userToSave.FirstName);
+                cmd.Parameters.AddWithValue("@LastName", userToSave.LastName);
+                cmd.Parameters.AddWithValue("@Address", userToSave.Address);
+                cmd.Parameters.AddWithValue("@City", userToSave.City);
+                cmd.Parameters.AddWithValue("@State", userToSave.State);
+                cmd.Parameters.AddWithValue("@Zip", userToSave.Zip);
+                cmd.Parameters.AddWithValue("@Phone", userToSave.Phone);
+                cmd.Parameters.AddWithValue("@Email", userToSave.Email);
+                cmd.Parameters.AddWithValue("@Password", userToSave.Password);
+                cmd.Parameters.AddWithValue("@Zip", ID);
 
                 cmd.ExecuteNonQuery();
+                
                 return true;
-
             }
             else
             {
@@ -151,10 +205,24 @@ namespace TechWizWebAPI
 
 
 
-            public long saveUser(User userToSave)
+        public long saveUser(User userToSave)
         {
-            String sqlString = "INSERT INTO user (UserName, FirstName, LastName, Address, City, State, Zip, Phone, Email, Password, isWizard) VALUES ('" + userToSave.UserName + "','" + userToSave.FirstName + "','" + userToSave.LastName + "','" + userToSave.Address + "','" + userToSave.City + "','" + userToSave.State + "'," + userToSave.Zip + ",'" + userToSave.Phone + "','" + userToSave.Email + "','" + userToSave.Password + "', " + userToSave.isWizard + ")";
-            MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
+            String sqlString = "INSERT INTO user (UserName, FirstName, LastName, Address, City, State, Zip, Phone, Email, Password) VALUES (@UserName,@FirstName,@LastName,@Address,@City,@State,@Zip,@Phone,@Email,@Password)";
+            MySqlCommand cmd = new MySqlCommand(sqlString, conn);
+
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@UserName", userToSave.UserName);
+            cmd.Parameters.AddWithValue("@FirstName", userToSave.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", userToSave.LastName);
+            cmd.Parameters.AddWithValue("@Address", userToSave.Address);
+            cmd.Parameters.AddWithValue("@City", userToSave.City);
+            cmd.Parameters.AddWithValue("@State", userToSave.State);
+            cmd.Parameters.AddWithValue("@Zip", userToSave.Zip);
+            cmd.Parameters.AddWithValue("@Phone", userToSave.Phone);
+            cmd.Parameters.AddWithValue("@Email", userToSave.Email);
+            cmd.Parameters.AddWithValue("@Password", userToSave.Password);
+
             cmd.ExecuteNonQuery();
             long id = cmd.LastInsertedId;
             return id;
