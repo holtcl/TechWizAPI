@@ -123,6 +123,7 @@ namespace TechWizWebAPI
                 u.Phone = mySQLReader.GetString(8);
                 u.Email = mySQLReader.GetString(9);
                 u.Password = mySQLReader.GetString(10);
+                u.isWizard = mySQLReader.GetInt32(11);
                 return u;
             }
             else
@@ -174,7 +175,7 @@ namespace TechWizWebAPI
             {
                 mySQLReader.Close();
 
-                sqlString = "UPDATE user SET UserName=@UserName, FirstName=@FirstName, LastName=@LastName, Address=@Address, City=@City, State=@State, Zip=@Zip, Phone=@Phone, Email=@Email, Password=@Password WHERE UserID = @ID";
+                sqlString = "UPDATE user SET UserName=@UserName, FirstName=@FirstName, LastName=@LastName, Address=@Address, City=@City, State=@State, Zip=@Zip, Phone=@Phone, Email=@Email, Password=@Password, isWizard=@isWizard WHERE UserID = @ID";
 
                 cmd = new MySqlCommand(sqlString, conn);
 
@@ -192,6 +193,7 @@ namespace TechWizWebAPI
                 cmd.Parameters.AddWithValue("@Email", userToSave.Email);
                 cmd.Parameters.AddWithValue("@Password", userToSave.Password);
                 cmd.Parameters.AddWithValue("@Zip", ID);
+                cmd.Parameters.AddWithValue("@isWizard", userToSave.isWizard);
 
                 cmd.ExecuteNonQuery();
                 
@@ -207,7 +209,7 @@ namespace TechWizWebAPI
 
         public long saveUser(User userToSave)
         {
-            String sqlString = "INSERT INTO user (UserName, FirstName, LastName, Address, City, State, Zip, Phone, Email, Password) VALUES (@UserName,@FirstName,@LastName,@Address,@City,@State,@Zip,@Phone,@Email,@Password)";
+            String sqlString = "INSERT INTO user (UserName, FirstName, LastName, Address, City, State, Zip, Phone, Email, Password, isWizard) VALUES (@UserName,@FirstName,@LastName,@Address,@City,@State,@Zip,@Phone,@Email,@Password,@isWizard)";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
 
             cmd.Prepare();
@@ -222,6 +224,7 @@ namespace TechWizWebAPI
             cmd.Parameters.AddWithValue("@Phone", userToSave.Phone);
             cmd.Parameters.AddWithValue("@Email", userToSave.Email);
             cmd.Parameters.AddWithValue("@Password", userToSave.Password);
+            cmd.Parameters.AddWithValue("@isWizard", userToSave.isWizard);
 
             cmd.ExecuteNonQuery();
             long id = cmd.LastInsertedId;
