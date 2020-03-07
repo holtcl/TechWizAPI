@@ -50,7 +50,7 @@ namespace TechWizWebAPI
                 u.Phone = mySQLReader.GetString(8);
                 u.Email = mySQLReader.GetString(9);
                 u.Password = mySQLReader.GetString(10);
-                u.isWizard = mySQLReader.GetInt32(11);
+                u.isWizard = mySQLReader.GetBoolean(11);
                 userArray.Add(u);
             }
 
@@ -84,7 +84,7 @@ namespace TechWizWebAPI
                 u.Phone = mySQLReader.GetString(8);
                 u.Email = mySQLReader.GetString(9);
                 u.Password = mySQLReader.GetString(10);
-                u.isWizard = mySQLReader.GetInt32(11);
+                u.isWizard = mySQLReader.GetBoolean(11);
                 return u;
             }
             else
@@ -123,7 +123,7 @@ namespace TechWizWebAPI
                 u.Phone = mySQLReader.GetString(8);
                 u.Email = mySQLReader.GetString(9);
                 u.Password = mySQLReader.GetString(10);
-                u.isWizard = mySQLReader.GetInt32(11);
+                u.isWizard = mySQLReader.GetBoolean(11);
                 return u;
             }
             else
