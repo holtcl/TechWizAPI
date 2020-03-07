@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Text;
 
 namespace TechWizWebAPI.Models
 {
-    public class Request
+    public class RequestForDisplay
     {
         public long requestID { get; set; }
         public string description { get; set; }
-        public int user { get; set; }
-        public int skill { get; set; }
-        public int? wizard { get; set; }    
+        public string user { get; set; }
+        public string skill { get; set; }
+        public string wizard { get; set; }
         public DateTime openDate { get; set; }
         public DateTime? acceptDate { get; set; }
         public DateTime? completedDate { get; set; }
         public int priceInCents { get; set; }
         public string title { get; set; }
-        public int contactMethod { get; set; }
+        public string contactMethod { get; set; }
     }
 }

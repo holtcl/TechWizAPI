@@ -534,8 +534,13 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\ContactMethodController.cs" />
     <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\SkillsController.cs" />
+    <Compile Include="Models\ContactMethod.cs" />
+    <Compile Include="Models\RequestForDisplay.cs" />
+    <Compile Include="Models\Skill.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -547,14 +552,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Provider\OAuthAppProvider.cs" />
+    <Compile Include="SkillAndContactPersistence.cs" />
     <Compile Include="Startup.cs" />
-
     <Compile Include="Controllers\RequestController.cs" />
     <Compile Include="InvoicePersistence.cs" />
     <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="RequestPersistence.cs" />
-
     <Compile Include="UserPersistence.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\UserController.cs" />

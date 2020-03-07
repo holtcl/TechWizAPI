@@ -41,6 +41,8 @@ namespace TechWizWebAPI.Controllers
         // POST: api/User
         public HttpResponseMessage Post([FromBody]User user)
         {
+            // This interface doesn't support creating wizards
+            user.isWizard = false;
             /*if(user == null ||  String.IsNullOrEmpty(user.UserName) || String.IsNullOrEmpty(user.FirstName) || String.IsNullOrEmpty(user.LastName) || String.IsNullOrEmpty(user.Email) || String.IsNullOrEmpty(user.Password))
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
                 */
