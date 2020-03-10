@@ -12,6 +12,97 @@ namespace TechWizWebAPI
     public class RequestPersistence
     {
         private MySql.Data.MySqlClient.MySqlConnection conn;
+
+        private const string acceptRequestAsWizardQuery =
+            "UPDATE  " +
+                "techwizard.workrequests  " +
+            "SET  " +
+                "user_WizardID = COALESCE(user_WizardID, @ID),   " +
+                "AcceptedDate = COALESCE(AcceptedDate, NOW()) " +
+            "WHERE  " +
+                "RequestId = @RID  ";
+
+        private const string getJobListDataForWizardById =
+            "SELECT  " +
+                "wr.requestid,  " +
+                "wr.title,  " +
+                "wr.description,  " +
+                "wr.CreatedDate,  " +
+                "wr.AcceptedDate, " +
+                "wr.CompletedDate,  " +
+                "wr.price_in_cents,  " +
+                "concat(u.FirstName, ' ', u.LastName) as user,  " +
+                "concat(w.FirstName, ' ', w.LastName) as wizard,  " +
+                "s.Name as skill,  " +
+                "cm.MethodName as contactmethod, " +
+                "u.UserID as UserUserID, " +
+                "u.UserName as UserUserName, " +
+                "u.FirstName as UserFirstName, " +
+                "u.LastName as UserLastName, " +
+                "u.Address as UserAddress, " +
+                "u.City as UserCity, " +
+                "u.State as UserState, " +
+                "u.Zip as UserZip, " +
+                "u.Phone as UserPhone, " +
+                "u.Email as UserEmail, " +
+                "u.isWizard as UserIsWizard, " +
+                "w.UserID as WizardUserID " +
+            "FROM  " +
+                "( " +
+                    "SELECT  " +
+                        "* " +
+                    "FROM  " +
+                        "techwizard.workrequests " +
+                    "WHERE " +
+                        "user_UserID != @ID " +
+                        "AND (user_WizardID is null " +
+                        "OR user_WizardID = @ID) " +
+                ") wr  " +
+                "left join techwizard.skills s on wr.Skills_SkillsId = s.SkillsId  " +
+                "left join techwizard.user u on wr.user_UserID = u.UserID  " +
+                "left join techwizard.user w on wr.user_WizardID = w.UserID  " +
+                "left join techwizard.contactmethods cm on wr.ContactMethodID = cm.ContactMethodID  ";
+
+        private const string getJobListDataForUserById =
+            "SELECT  " +
+                "wr.requestid,  " +
+                "wr.title,  " +
+                "wr.description,  " +
+                "wr.CreatedDate,  " +
+                "wr.AcceptedDate, " +
+                "wr.CompletedDate,  " +
+                "wr.price_in_cents,  " +
+                "concat(u.FirstName, ' ', u.LastName) as user,  " +
+                "concat(w.FirstName, ' ', w.LastName) as wizard,  " +
+                "s.Name as skill,  " +
+                "cm.MethodName as contactmethod, " +
+                "w.UserID as WizardUserID, " +
+                "w.UserName as WizardUserName, " +
+                "w.FirstName as WizardFirstName, " +
+                "w.LastName as WizardLastName, " +
+                "w.Address as WizardAddress, " +
+                "w.City as WizardCity, " +
+                "w.State as WizardState, " +
+                "w.Zip as WizardZip, " +
+                "w.Phone as WizardPhone, " +
+                "w.Email as WizardEmail, " +
+                "w.isWizard as WizardIsWizard " +
+            "FROM  " +
+                "( " +
+                    "SELECT  " +
+                        "* " +
+                    "FROM  " +
+                        "techwizard.workrequests " +
+                    "WHERE " +
+                        "user_UserID = @ID " +
+                ") wr  " +
+                "left join techwizard.skills s on wr.Skills_SkillsId = s.SkillsId " +
+                "left join techwizard.user u on wr.user_UserID = u.UserID " +
+                "left join techwizard.user w on wr.user_WizardID = w.UserID " +
+                "left join techwizard.contactmethods cm on wr.ContactMethodID = cm.ContactMethodID";
+
+
+
         public RequestPersistence()
         {
             string myConnectionString;
@@ -72,21 +163,20 @@ namespace TechWizWebAPI
             ArrayList requestArray = new ArrayList();
 
             while (mySQLReader.Read()) {
-                Request r = new Request();
-                //{
-                r.requestID = (long)(int)mySQLReader["RequestID"];
-                r.title = (string)mySQLReader["title"];
-                r.description = (string)mySQLReader["Description"];
-                r.user = (int)mySQLReader["user_UserID"];
-                r.wizard = (int?)(mySQLReader["user_WizardID"] == System.DBNull.Value ? null : mySQLReader["user_WizardID"]);
-                r.skill = (int)mySQLReader["Skills_SkillsId"];
-                r.openDate = (DateTime)mySQLReader["CreatedDate"];
-                r.completedDate = (DateTime?)(mySQLReader["CompletedDate"] == System.DBNull.Value?null: mySQLReader["CompletedDate"]) ;
-                //acceptDate = mySQLReader.GetDateTime("AcceptedDate"),
-                r.priceInCents = (int)mySQLReader["price_in_cents"];
-                r.contactMethod = (int)mySQLReader["ContactMethodID"];
-                
-                //};
+                Request r = new Request()
+                {
+                    requestID = (long)(int)mySQLReader["RequestID"],
+                    title = (string)mySQLReader["title"],
+                    description = (string)mySQLReader["Description"],
+                    user = (int)mySQLReader["user_UserID"],
+                    wizard = (int?)(mySQLReader["user_WizardID"] == System.DBNull.Value ? null : mySQLReader["user_WizardID"]),
+                    skill = (int)mySQLReader["Skills_SkillsId"],
+                    openDate = (DateTime)mySQLReader["CreatedDate"],
+                    completedDate = (DateTime?)(mySQLReader["CompletedDate"] == System.DBNull.Value?null: mySQLReader["CompletedDate"]),
+                    acceptDate = (DateTime?)(mySQLReader["AcceptedDate"] == System.DBNull.Value ? null : mySQLReader["AcceptedDate"]),
+                    priceInCents = (int)mySQLReader["price_in_cents"],
+                    contactMethod = (int)mySQLReader["ContactMethodID"]
+                };
 
                 requestArray.Add(r);
             }
@@ -97,64 +187,143 @@ namespace TechWizWebAPI
 
         public ArrayList getRequestsForDisplayForUserId(long id)
         {
-            User u = new User();
-            MySqlDataReader mySQLReader = null;
-
-            String sqlString =
-                "SELECT " +
-                    "wr.requestid, " +
-                    "wr.title, " +
-                    "wr.description, " +
-                    "wr.CreatedDate, " +
-                    "wr.CompletedDate, " +
-                    "wr.price_in_cents, " +
-                    "concat(u.FirstName, ' ', u.LastName) as user, " +
-                    "concat(w.FirstName, ' ', w.LastName) as wizard, " +
-                    "s.Name as skill, " +
-                    "cm.MethodName as contactmethod " +
-                "FROM " +
-                    "techwizard.workrequests wr " +
-                    "left join techwizard.skills s on wr.Skills_SkillsId = s.SkillsId " +
-                    "left join techwizard.user u on wr.user_UserID = u.UserID " +
-                    "left join techwizard.user w on wr.user_WizardID = w.UserID " +
-                    "left join techwizard.contactmethods cm on wr.ContactMethodID = cm.ContactMethodID " +
-                "WHERE " +
-                    "u.UserID=@ID ";
-
-            MySqlCommand cmd = new MySqlCommand(sqlString, conn);
-
+            MySqlDataReader mySQLReader;
+ 
+            MySqlCommand cmd = new MySqlCommand(getJobListDataForUserById, conn);
             cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@ID", id);
+            cmd.Parameters.AddWithValue("@ID", MySqlDbType.Int32).Value = id;
 
             mySQLReader = cmd.ExecuteReader();
 
             ArrayList requestArray = new ArrayList();
 
+            // Declare transfer objects
+            RequestForDisplay r;
+            User w;
+            JobListObject jlo;
+
             while (mySQLReader.Read())
             {
-                RequestForDisplay r = new RequestForDisplay();
-                //{
-                r.requestID = (long)(int)mySQLReader["RequestID"];
-                r.title = (string)mySQLReader["title"];
-                r.description = (string)mySQLReader["Description"];
-                r.user = (string)mySQLReader["user"];
-                r.wizard = (string)(mySQLReader["wizard"] == System.DBNull.Value ? null : mySQLReader["wizard"]);
-                r.skill = (string)mySQLReader["skill"];
-                r.openDate = (DateTime)mySQLReader["CreatedDate"];
-                r.completedDate = (DateTime?)(mySQLReader["CompletedDate"] == System.DBNull.Value ? null : mySQLReader["CompletedDate"]);
-                //acceptDate = mySQLReader.GetDateTime("AcceptedDate"),
-                r.priceInCents = (int)mySQLReader["price_in_cents"];
-                r.contactMethod = (string)mySQLReader["contactmethod"];
+                r = new RequestForDisplay()
+                {
+                    requestID = (long)(int)mySQLReader["RequestID"],
+                    title = (string)mySQLReader["title"],
+                    description = (string)mySQLReader["Description"],
+                    user = (string)mySQLReader["user"],
+                    wizard = (string)(mySQLReader["wizard"] == System.DBNull.Value ? null : mySQLReader["wizard"]),
+                    skill = (string)mySQLReader["skill"],
+                    openDate = (DateTime)mySQLReader["CreatedDate"],
+                    completedDate = (DateTime?)(mySQLReader["CompletedDate"] == System.DBNull.Value ? null : mySQLReader["CompletedDate"]),
+                    acceptDate = (DateTime?)(mySQLReader["AcceptedDate"] == System.DBNull.Value ? null : mySQLReader["AcceptedDate"]),
+                    priceInCents = (int)mySQLReader["price_in_cents"],
+                    contactMethod = (string)mySQLReader["contactmethod"]
+                };
 
-                //};
+                w = new User();
 
-                requestArray.Add(r);
+                w.ID = (int?)(mySQLReader["WizardUserID"] == System.DBNull.Value ? null : mySQLReader["WizardUserID"]);
+
+                if (w.ID != null)
+                {
+                    w.FirstName = (string)mySQLReader["WizardFirstName"];
+
+                    w.isWizard = true;
+
+                    if (r.contactMethod == "Email")
+                    {
+                        w.Email = (string)mySQLReader["WizardEmail"];
+                    }
+                    else if (r.contactMethod == "Phone")
+                    {
+                        w.Phone = (string)mySQLReader["WizardPhone"];
+                    }
+                    // Maybe implement GPS distance here instead of sharing teh full address
+                    else if (r.contactMethod == "In-Person")
+                    {
+                        w.Address = (string)mySQLReader["WizardAddress"];
+                        w.City = (string)mySQLReader["WizardCity"];
+                        w.State = (string)mySQLReader["WizardState"];
+                        w.Zip = (int)mySQLReader["WizardZip"];
+                    }
+                } 
+
+
+                jlo = new JobListObject() { r4d = r, contact = w };
+                requestArray.Add(jlo);
             }
 
             return requestArray;
         }
 
+        public ArrayList getRequestsForDisplayForWizardId(long id)
+        {
+            MySqlDataReader mySQLReader;
+
+            MySqlCommand cmd = new MySqlCommand(getJobListDataForWizardById, conn);
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@ID", MySqlDbType.Int32).Value = id;
+
+            mySQLReader = cmd.ExecuteReader();
+
+            ArrayList requestArray = new ArrayList();
+
+            // Declare transfer objects
+            RequestForDisplay r;
+            User u;
+            JobListObject jlo;
+
+            while (mySQLReader.Read())
+            {
+                r = new RequestForDisplay()
+                {
+                    requestID = (long)(int)mySQLReader["RequestID"],
+                    title = (string)mySQLReader["title"],
+                    description = (string)mySQLReader["Description"],
+                    user = (string)mySQLReader["user"],
+                    wizard = (string)(mySQLReader["wizard"] == System.DBNull.Value ? null : mySQLReader["wizard"]),
+                    skill = (string)mySQLReader["skill"],
+                    openDate = (DateTime)mySQLReader["CreatedDate"],
+                    completedDate = (DateTime?)(mySQLReader["CompletedDate"] == System.DBNull.Value ? null : mySQLReader["CompletedDate"]),
+                    acceptDate = (DateTime ?)(mySQLReader["AcceptedDate"] == System.DBNull.Value ? null : mySQLReader["AcceptedDate"]),
+                    priceInCents = (int)mySQLReader["price_in_cents"],
+                    contactMethod = (string)mySQLReader["contactmethod"]
+                };
+
+                u = new User();
+
+                int? wizardUid = (int?)(mySQLReader["WizardUserID"] == System.DBNull.Value ? null : mySQLReader["WizardUserID"]);
+
+                if ( wizardUid != null && wizardUid == id)
+                {
+                    u.ID = (int)mySQLReader["UserUserID"];
+                    u.FirstName = (string)mySQLReader["UserFirstName"];
+
+                    u.isWizard = false;
+
+                    if (r.contactMethod == "Email")
+                    {
+                        u.Email = (string)mySQLReader["UserEmail"];
+                    }
+                    else if (r.contactMethod == "Phone")
+                    {
+                        u.Phone = (string)mySQLReader["UserPhone"];
+                    }
+                    // Maybe implement GPS distance here instead of sharing teh full address
+                    else if (r.contactMethod == "In-Person")
+                    {
+                        u.Address = (string)mySQLReader["UserAddress"];
+                        u.City = (string)mySQLReader["UserCity"];
+                        u.State = (string)mySQLReader["UserState"];
+                        u.Zip = (int)mySQLReader["UserZip"];
+                    }
+                }
+
+                jlo = new JobListObject() { r4d = r, contact = u };
+                requestArray.Add(jlo);
+            }
+
+            return requestArray;
+        }
         public ArrayList getRequestsForWizardId()
         {
 
@@ -234,6 +403,22 @@ namespace TechWizWebAPI
             }
         }
 
+
+        public bool acceptRequestAsWizard(long requestID, long wizardID) {
+            
+
+            MySqlDataReader mySQLReader;
+
+            MySqlCommand cmd = new MySqlCommand(acceptRequestAsWizardQuery, conn);
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@ID", MySqlDbType.Int32).Value = wizardID;
+            cmd.Parameters.AddWithValue("@RID", MySqlDbType.Int32).Value = requestID;
+
+            mySQLReader = cmd.ExecuteReader();
+
+            return (mySQLReader.RecordsAffected > 0);
+
+        }
 
         public bool updateRequest(long ID, Request requestToSave)
         {

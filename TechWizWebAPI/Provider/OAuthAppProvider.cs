@@ -25,7 +25,8 @@ namespace TechWizWebAPI.Provider
                     var claims = new List<Claim>()
                     {
                         new Claim(ClaimTypes.Name, user.UserName),
-                        new Claim("UserID", ""+user.ID)
+                        new Claim("UserID", ""+user.ID),
+                        new Claim("isWizard", ""+user.isWizard)
                     };
 
                     ClaimsIdentity oAutIdentity = new ClaimsIdentity(claims, Startup.OAuthOptions.AuthenticationType);
