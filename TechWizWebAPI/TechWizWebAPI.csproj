@@ -538,7 +538,9 @@
     <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\SkillsController.cs" />
+    <Compile Include="Controllers\WizardJobController.cs" />
     <Compile Include="Models\ContactMethod.cs" />
+    <Compile Include="Models\JobListObject.cs" />
     <Compile Include="Models\RequestForDisplay.cs" />
     <Compile Include="Models\Skill.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
