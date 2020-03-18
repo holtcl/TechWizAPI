@@ -106,7 +106,7 @@ namespace TechWizWebAPI
         public RequestPersistence()
         {
             string myConnectionString;
-            myConnectionString = "server=127.0.0.1;uid=root;pwd=password;database=techwizard";
+            myConnectionString = "server=127.0.0.1;uid=root;pwd=techwizard;database=techwizard";
             try
             {
                 conn = new MySql.Data.MySqlClient.MySqlConnection();
@@ -237,6 +237,10 @@ namespace TechWizWebAPI
                     {
                         w.Phone = (string)mySQLReader["WizardPhone"];
                     }
+                    else if (r.contactMethod == "Text")
+                    {
+                        w.Phone = (string)mySQLReader["WizardPhone"];
+                    }
                     // Maybe implement GPS distance here instead of sharing teh full address
                     else if (r.contactMethod == "In-Person")
                     {
@@ -244,6 +248,7 @@ namespace TechWizWebAPI
                         w.City = (string)mySQLReader["WizardCity"];
                         w.State = (string)mySQLReader["WizardState"];
                         w.Zip = (int)mySQLReader["WizardZip"];
+                        w.Phone = (string)mySQLReader["WizardPhone"];
                     }
                 } 
 
@@ -276,7 +281,7 @@ namespace TechWizWebAPI
             {
                 r = new RequestForDisplay()
                 {
-                    requestID = (long)(int)mySQLReader["RequestID"],
+                    requestID = (int)mySQLReader["RequestID"],
                     title = (string)mySQLReader["title"],
                     description = (string)mySQLReader["Description"],
                     user = (string)mySQLReader["user"],
@@ -308,6 +313,10 @@ namespace TechWizWebAPI
                     {
                         u.Phone = (string)mySQLReader["UserPhone"];
                     }
+                    else if (r.contactMethod == "Text")
+                    {
+                        u.Phone = (string)mySQLReader["UserPhone"];
+                    }
                     // Maybe implement GPS distance here instead of sharing teh full address
                     else if (r.contactMethod == "In-Person")
                     {
@@ -315,6 +324,7 @@ namespace TechWizWebAPI
                         u.City = (string)mySQLReader["UserCity"];
                         u.State = (string)mySQLReader["UserState"];
                         u.Zip = (int)mySQLReader["UserZip"];
+                        u.Phone = (string)mySQLReader["UserPhone"];
                     }
                 }
 
