@@ -119,33 +119,6 @@ namespace TechWizWebAPI
             }
         }
 
-        public ArrayList getAllRequests()
-        {
-
-            ArrayList requestArray = new ArrayList();
-            MySql.Data.MySqlClient.MySqlDataReader mySQLReader = null;
-
-            String sqlString = "SELECT * From workrequests";
-            MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
-
-            mySQLReader = cmd.ExecuteReader();
-            while (mySQLReader.Read())
-            {
-                Request r = new Request();
-                r.requestID = mySQLReader.GetInt32(0);
-                r.description = mySQLReader.GetString(1);
-                r.user = mySQLReader.GetInt32(2);
-                r.wizard = mySQLReader.GetInt32(3);
-                r.openDate = mySQLReader.GetDateTime(4);
-                r.acceptDate = mySQLReader.GetDateTime(5);
-                r.completedDate = mySQLReader.GetDateTime(6);
-                //r.supportType = mySQLReader.GetString(7);
-                //r.status = mySQLReader.GetInt32(8);
-                requestArray.Add(r);
-            }
-            return requestArray;
-        }
-
         public ArrayList getRequestsForUserId(long id) {
             User u = new User();
             MySqlDataReader mySQLReader = null;
@@ -322,32 +295,6 @@ namespace TechWizWebAPI
                 requestArray.Add(jlo);
             }
 
-            return requestArray;
-        }
-        public ArrayList getRequestsForWizardId()
-        {
-
-            ArrayList requestArray = new ArrayList();
-            MySqlDataReader mySQLReader = null;
-
-            String sqlString = "SELECT * From workrequests";
-            MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand(sqlString, conn);
-
-            mySQLReader = cmd.ExecuteReader();
-            while (mySQLReader.Read())
-            {
-                Request r = new Request();
-                r.requestID = mySQLReader.GetInt32(0);
-                r.description = mySQLReader.GetString(1);
-                r.user = mySQLReader.GetInt32(2);
-                r.wizard = mySQLReader.GetInt32(3);
-                r.openDate = mySQLReader.GetDateTime(4);
-                r.acceptDate = mySQLReader.GetDateTime(5);
-                r.completedDate = mySQLReader.GetDateTime(6);
-                //r.supportType = mySQLReader.GetString(7);
-                //r.status = mySQLReader.GetInt32(8);
-                requestArray.Add(r);
-            }
             return requestArray;
         }
 
