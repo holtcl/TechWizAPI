@@ -106,7 +106,7 @@ namespace TechWizWebAPI
         public RequestPersistence()
         {
             string myConnectionString;
-            myConnectionString = "server=127.0.0.1;uid=root;pwd=techwizard;database=techwizard";
+            myConnectionString = "server=127.0.0.1;uid=root;pwd=password;database=techwizard";
             try
             {
                 conn = new MySql.Data.MySqlClient.MySqlConnection();

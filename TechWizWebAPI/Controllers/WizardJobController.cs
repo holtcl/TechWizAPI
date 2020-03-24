@@ -35,18 +35,12 @@ namespace TechWizWebAPI.Controllers
                 }
             }
         }
-        // GET: api/WizardJob/5
-        public Request Get(long id)
-        {
-            RequestPersistence rp = new RequestPersistence();
-            Request request = rp.getRequest(id);
-            return request;
-        }
 
         [Authorize]
+        [HttpPost]
+        [Route("api/WizardJob/{requestId}")]
         // POST: api/WizardJob/requestid/
-        // This accepts the job
-        public HttpResponseMessage Post(long requestid, [FromBody]Request value)
+        public HttpResponseMessage Post(long requestId, [FromBody]FormUrlEncodedContent content)
         {
             var identity = User.Identity as ClaimsIdentity;
             if (identity == null)
@@ -59,7 +53,7 @@ namespace TechWizWebAPI.Controllers
                 {
                     int user = (int)Int64.Parse(identity.FindFirst("UserID").Value);
                     RequestPersistence rp = new RequestPersistence();
-                    return Request.CreateResponse(HttpStatusCode.OK, rp.acceptRequestAsWizard(requestid, user));
+                    return Request.CreateResponse(HttpStatusCode.OK, rp.acceptRequestAsWizard(requestId, user));
                 }
                 else
                 {
@@ -68,23 +62,13 @@ namespace TechWizWebAPI.Controllers
             }
         }
 
-        // PUT: api/WizardJob/5
-        public HttpResponseMessage Put(long id, [FromBody]Request value)
+        // PUT: api/WizardJob/requestid/hoursworked
+        // sets the number of hours worked for the job
+        public HttpResponseMessage Put(long id, int hours, [FromBody]Request value)
         {
             RequestPersistence rp = new RequestPersistence();
             bool recordExisted = false;
-            recordExisted = rp.updateRequest(id, value);
-
-            HttpResponseMessage response;
-            if (recordExisted)
-            {
-                response = Request.CreateResponse(HttpStatusCode.NoContent);
-            }
-            else
-            {
-                response = Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-            return response;
+            return Request.CreateResponse(HttpStatusCode.NotImplemented);
         }
 
 
