@@ -554,14 +554,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Provider\OAuthAppProvider.cs" />
-    <Compile Include="SkillAndContactPersistence.cs" />
+    <Compile Include="Persistence\SkillAndContactPersistence.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Controllers\RequestController.cs" />
-    <Compile Include="InvoicePersistence.cs" />
+    <Compile Include="Persistence\InvoicePersistence.cs" />
     <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\Request.cs" />
-    <Compile Include="RequestPersistence.cs" />
-    <Compile Include="UserPersistence.cs" />
+    <Compile Include="Persistence\RequestPersistence.cs" />
+    <Compile Include="Persistence\UserPersistence.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">

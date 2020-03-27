@@ -13,6 +13,8 @@ namespace TechWizWebAPI.Controllers
     public class WizardJobController : ApiController
     {
         [Authorize]
+        [HttpGet]
+        [Route("api/WizardJob")]
         // GET: api/WizardJob
         public HttpResponseMessage Get()
         {
@@ -35,18 +37,12 @@ namespace TechWizWebAPI.Controllers
                 }
             }
         }
-        // GET: api/WizardJob/5
-        public Request Get(long id)
-        {
-            RequestPersistence rp = new RequestPersistence();
-            Request request = rp.getRequest(id);
-            return request;
-        }
 
         [Authorize]
+        [HttpPost]
+        [Route("api/WizardJob/{requestId}")]
         // POST: api/WizardJob/requestid/
-        // This accepts the job
-        public HttpResponseMessage Post(long requestid, [FromBody]Request value)
+        public HttpResponseMessage Post(long requestId, [FromBody]FormUrlEncodedContent content)
         {
             var identity = User.Identity as ClaimsIdentity;
             if (identity == null)
@@ -59,7 +55,7 @@ namespace TechWizWebAPI.Controllers
                 {
                     int user = (int)Int64.Parse(identity.FindFirst("UserID").Value);
                     RequestPersistence rp = new RequestPersistence();
-                    return Request.CreateResponse(HttpStatusCode.OK, rp.acceptRequestAsWizard(requestid, user));
+                    return Request.CreateResponse(HttpStatusCode.OK, rp.acceptRequestAsWizard(requestId, user));
                 }
                 else
                 {
@@ -68,23 +64,39 @@ namespace TechWizWebAPI.Controllers
             }
         }
 
-        // PUT: api/WizardJob/5
-        public HttpResponseMessage Put(long id, [FromBody]Request value)
+        [Authorize]
+        [HttpPut]
+        [Route("api/WizardJob/{requestId}/{hours}")]
+        // PUT: api/WizardJob/requestid/hoursworked
+        // sets the number of hours worked for the job
+        public HttpResponseMessage Put(long requestId, int hours, [FromBody]Request value)
         {
-            RequestPersistence rp = new RequestPersistence();
-            bool recordExisted = false;
-            recordExisted = rp.updateRequest(id, value);
-
-            HttpResponseMessage response;
-            if (recordExisted)
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null)
             {
-                response = Request.CreateResponse(HttpStatusCode.NoContent);
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
             }
             else
             {
-                response = Request.CreateResponse(HttpStatusCode.NotFound);
+                if (bool.Parse(identity.FindFirst("isWizard").Value))
+                {
+                    int user = (int)long.Parse(identity.FindFirst("UserID").Value);
+                    RequestPersistence rp = new RequestPersistence();
+                    bool returnObj = rp.submitHoursWorkedAsWizard(user, (int) requestId, hours);
+                    if (returnObj)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, returnObj);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest);
+                    }
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
             }
-            return response;
         }
 
 

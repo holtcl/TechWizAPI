@@ -22,6 +22,22 @@ namespace TechWizWebAPI
             "WHERE  " +
                 "RequestId = @RID  ";
 
+        private const string completeJobQuery =
+            "UPDATE techwizard.workrequests " +
+            "SET " +
+                "CompletedDate=now() " +
+            "WHERE " +
+                "RequestId = @RID " +
+                "and user_UserID = @ID ";
+
+        private const string submitHoursWorkedAsWizardQuery =
+            "UPDATE techwizard.workrequests " +
+            "SET " +
+                "hoursWorked = @HOURS " +
+            "WHERE " +
+                "RequestId = @RID " +
+                "AND user_WizardId = @WID ";
+
         private const string getJobListDataForWizardById =
             "SELECT  " +
                 "wr.requestid,  " +
@@ -30,6 +46,7 @@ namespace TechWizWebAPI
                 "wr.CreatedDate,  " +
                 "wr.AcceptedDate, " +
                 "wr.CompletedDate,  " +
+                "wr.hoursWorked as hours,  " +
                 "wr.price_in_cents,  " +
                 "concat(u.FirstName, ' ', u.LastName) as user,  " +
                 "concat(w.FirstName, ' ', w.LastName) as wizard,  " +
@@ -70,7 +87,8 @@ namespace TechWizWebAPI
                 "wr.description,  " +
                 "wr.CreatedDate,  " +
                 "wr.AcceptedDate, " +
-                "wr.CompletedDate,  " +
+                "wr.CompletedDate,  " + 
+                "wr.hoursWorked as hours,  " +
                 "wr.price_in_cents,  " +
                 "concat(u.FirstName, ' ', u.LastName) as user,  " +
                 "concat(w.FirstName, ' ', w.LastName) as wizard,  " +
@@ -106,7 +124,7 @@ namespace TechWizWebAPI
         public RequestPersistence()
         {
             string myConnectionString;
-            myConnectionString = "server=127.0.0.1;uid=root;pwd=techwizard;database=techwizard";
+            myConnectionString = "server=127.0.0.1;uid=root;pwd=password;database=techwizard";
             try
             {
                 conn = new MySql.Data.MySqlClient.MySqlConnection();
@@ -157,6 +175,18 @@ namespace TechWizWebAPI
             return requestArray;
         }
 
+        public bool completeJob(int user, int requestId) {
+            MySqlDataReader mySQLReader;
+
+            MySqlCommand cmd = new MySqlCommand(completeJobQuery, conn);
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@ID", MySqlDbType.Int32).Value = user;
+            cmd.Parameters.AddWithValue("@RID", MySqlDbType.Int32).Value = requestId;
+
+            mySQLReader = cmd.ExecuteReader();
+
+            return (mySQLReader.RecordsAffected > 0);
+        }
 
         public ArrayList getRequestsForDisplayForUserId(long id)
         {
@@ -184,6 +214,7 @@ namespace TechWizWebAPI
                     description = (string)mySQLReader["Description"],
                     user = (string)mySQLReader["user"],
                     wizard = (string)(mySQLReader["wizard"] == System.DBNull.Value ? null : mySQLReader["wizard"]),
+                    hours = (int?)(mySQLReader["hours"] == System.DBNull.Value ? null : mySQLReader["hours"]),
                     skill = (string)mySQLReader["skill"],
                     openDate = (DateTime)mySQLReader["CreatedDate"],
                     completedDate = (DateTime?)(mySQLReader["CompletedDate"] == System.DBNull.Value ? null : mySQLReader["CompletedDate"]),
@@ -260,6 +291,7 @@ namespace TechWizWebAPI
                     user = (string)mySQLReader["user"],
                     wizard = (string)(mySQLReader["wizard"] == System.DBNull.Value ? null : mySQLReader["wizard"]),
                     skill = (string)mySQLReader["skill"],
+                    hours = (int?)(mySQLReader["hours"] == System.DBNull.Value ? null : mySQLReader["hours"]),
                     openDate = (DateTime)mySQLReader["CreatedDate"],
                     completedDate = (DateTime?)(mySQLReader["CompletedDate"] == System.DBNull.Value ? null : mySQLReader["CompletedDate"]),
                     acceptDate = (DateTime ?)(mySQLReader["AcceptedDate"] == System.DBNull.Value ? null : mySQLReader["AcceptedDate"]),
@@ -370,6 +402,21 @@ namespace TechWizWebAPI
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@ID", MySqlDbType.Int32).Value = wizardID;
             cmd.Parameters.AddWithValue("@RID", MySqlDbType.Int32).Value = requestID;
+
+            mySQLReader = cmd.ExecuteReader();
+
+            return (mySQLReader.RecordsAffected > 0);
+
+        }
+
+        public bool submitHoursWorkedAsWizard(int wizardID, int requestID, int hours) {
+            MySqlDataReader mySQLReader;
+ 
+            MySqlCommand cmd = new MySqlCommand(submitHoursWorkedAsWizardQuery, conn);
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@WID", MySqlDbType.Int32).Value = wizardID;
+            cmd.Parameters.AddWithValue("@RID", MySqlDbType.Int32).Value = requestID;
+            cmd.Parameters.AddWithValue("@HOURS", MySqlDbType.Int32).Value = hours;
 
             mySQLReader = cmd.ExecuteReader();
 
