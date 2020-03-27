@@ -13,6 +13,8 @@ namespace TechWizWebAPI.Controllers
     public class WizardJobController : ApiController
     {
         [Authorize]
+        [HttpGet]
+        [Route("api/WizardJob")]
         // GET: api/WizardJob
         public HttpResponseMessage Get()
         {
@@ -62,13 +64,39 @@ namespace TechWizWebAPI.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPut]
+        [Route("api/WizardJob/{requestId}/{hours}")]
         // PUT: api/WizardJob/requestid/hoursworked
         // sets the number of hours worked for the job
-        public HttpResponseMessage Put(long id, int hours, [FromBody]Request value)
+        public HttpResponseMessage Put(long requestId, int hours, [FromBody]Request value)
         {
-            RequestPersistence rp = new RequestPersistence();
-            bool recordExisted = false;
-            return Request.CreateResponse(HttpStatusCode.NotImplemented);
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+            else
+            {
+                if (bool.Parse(identity.FindFirst("isWizard").Value))
+                {
+                    int user = (int)long.Parse(identity.FindFirst("UserID").Value);
+                    RequestPersistence rp = new RequestPersistence();
+                    bool returnObj = rp.submitHoursWorkedAsWizard(user, (int) requestId, hours);
+                    if (returnObj)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, returnObj);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest);
+                    }
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+            }
         }
 
 

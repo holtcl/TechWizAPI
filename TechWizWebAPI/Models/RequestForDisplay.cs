@@ -11,6 +11,7 @@ namespace TechWizWebAPI.Models
         public string user { get; set; }
         public string skill { get; set; }
         public string wizard { get; set; }
+        public int? hours { get; set; }
         public DateTime openDate { get; set; }
         public DateTime? acceptDate { get; set; }
         public DateTime? completedDate { get; set; }

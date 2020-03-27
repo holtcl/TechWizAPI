@@ -28,13 +28,6 @@ namespace TechWizWebAPI.Controllers
                 return rp.getRequestsForDisplayForUserId(user);
             }
         }
-        // GET: api/Request/5
-        public Request Get(long id)
-        {
-            RequestPersistence rp = new RequestPersistence();
-            Request request = rp.getRequest(id);
-            return request;
-        }
 
         [Authorize]
         // POST: api/Request
@@ -43,7 +36,7 @@ namespace TechWizWebAPI.Controllers
             var identity = User.Identity as ClaimsIdentity;
             if (identity == null)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
             }
             else
             {
@@ -58,23 +51,33 @@ namespace TechWizWebAPI.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPut]
+        [Route("api/Request/{requestId}")]
         // PUT: api/Request/5
-        public HttpResponseMessage Put(long id, [FromBody]Request value)
+        // for accepting a request
+        public HttpResponseMessage Put(long requestId, [FromBody]Request value)
         {
-            RequestPersistence rp = new RequestPersistence();
-            bool recordExisted = false;
-            recordExisted = rp.updateRequest(id, value);
-
-            HttpResponseMessage response;
-            if (recordExisted)
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null)
             {
-                response = Request.CreateResponse(HttpStatusCode.NoContent);
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
             }
             else
             {
-                response = Request.CreateResponse(HttpStatusCode.NotFound);
+                int user = (int)Int64.Parse(identity.FindFirst("UserID").Value);
+                RequestPersistence rp = new RequestPersistence();
+                bool returnObj;
+                returnObj = rp.completeJob(user, (int)requestId);
+                if (returnObj)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, returnObj);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest);
+                }
             }
-            return response;
         }
 
 
