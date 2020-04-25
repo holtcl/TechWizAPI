@@ -15,7 +15,7 @@ namespace TechWizWebAPI
         public InvoicePersistence()
         {
             string myConnectionString;
-            myConnectionString = "server=127.0.0.1;uid=root;pwd=password;database=techwizard";
+            myConnectionString = "server=techwizard1.mysql.database.azure.com;uid=holtcl@techwizard1;pwd=Techwiz4rd;database=techwizard";
             try
             {
                 conn = new MySql.Data.MySqlClient.MySqlConnection();
